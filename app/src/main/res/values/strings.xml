@@ -1,3 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Hw2API</string>
+    <string name="error_loading">Ошибка загрузки</string>
+    <string name="error_network">Ошибка сети</string>
+    <string name="button_retry">Повторить</string>
+    <string name="toast_gif_id">Id: %s</string>
+    <string name="toast_gif_number">Номер: %d</string>
 </resources>
