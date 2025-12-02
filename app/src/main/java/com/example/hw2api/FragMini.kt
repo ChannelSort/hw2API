@@ -5,24 +5,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import coil.ImageLoader
+import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
+import coil.request.ImageRequest
 
-class GifsFragment : Fragment() {
 
-    private val viewModel: GifsViewModel by viewModels {
-        val repo = GifsRepository(ApiClient.create())
+class FragMini() : Fragment() {
 
-        @Suppress("UNCHECKED_CAST")
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return GifsViewModel(repo) as T
+    companion object {
+        fun newInstance(gif: GifObject): FragMini {
+            return FragMini().apply {
+                arguments = Bundle().apply {
+                    putString("url", gif.images.original.url)
+                }
             }
         }
     }
@@ -32,6 +34,8 @@ class GifsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val url = requireArguments().getString("url")!!
+
         val imageLoader = ImageLoader.Builder(requireContext())
             .components {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -45,12 +49,16 @@ class GifsFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                GifsScreen(viewModel = viewModel, imageLoader = imageLoader
-                ) { gif ->
-                    parentFragmentManager
-                        .beginTransaction()
-                        .replace(android.R.id.content, FragMini.newInstance(gif))
-                        .commit()
+                Box(modifier = Modifier.fillMaxSize()) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .data(url)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = null,
+                        imageLoader = imageLoader,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
         }

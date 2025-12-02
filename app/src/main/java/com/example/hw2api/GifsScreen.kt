@@ -19,7 +19,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 
 @Composable
-fun GifsScreen(viewModel: GifsViewModel, imageLoader: ImageLoader) {
+fun GifsScreen(viewModel: GifsViewModel, imageLoader: ImageLoader, createFrag: (GifObject) -> Unit) {
     val lazyPagingItems = viewModel.gifsFlow.collectAsLazyPagingItems()
 
     Box(modifier = Modifier
@@ -32,7 +32,8 @@ fun GifsScreen(viewModel: GifsViewModel, imageLoader: ImageLoader) {
             is LoadState.NotLoading -> {
                 ContentScreen(
                     lazyPagingItems = lazyPagingItems,
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
+                    createFrag = createFrag
                 )
             }
         }
@@ -42,7 +43,8 @@ fun GifsScreen(viewModel: GifsViewModel, imageLoader: ImageLoader) {
 @Composable
 fun ContentScreen(
     lazyPagingItems: androidx.paging.compose.LazyPagingItems<GifObject>,
-    imageLoader: ImageLoader
+    imageLoader: ImageLoader,
+    createFrag: (GifObject) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -61,6 +63,7 @@ fun ContentScreen(
                     onClick = {
                         val message = context.getString(R.string.toast_gif_number, index + 1)
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        createFrag(gif)
                     }
                 )
             }
